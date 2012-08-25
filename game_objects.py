@@ -92,8 +92,8 @@ class Map(Entity):
 
 		self.hover_tile = None
 
-		for x in range(self.cols):
-			for y in range(self.rows):
+		for y in range(self.rows):
+			for x in range(self.cols):
 				self.tiles.append(Tile(x*self.tile_width, y*self.tile_height, x, y))
 
 	def draw(self, canvas):
@@ -122,6 +122,9 @@ class Map(Entity):
 			self.hover_tile.status = Tile.NONE
 
 		self.hover_tile = self.tiles[tile_index]
+
+		print self.hover_tile.fx, self.hover_tile.fy
+
 		self.hover_tile.status = Tile.STATUS_HOVER
 
 
