@@ -11,6 +11,7 @@ class GameInput():
 	def __init__(self):
 		self._keys = {}
 		self.mpos = Vector2d(-1, -1)
+		self.mdown = False
 
 	def consume(self, event):
 		if event.type == pygame.KEYDOWN:
@@ -23,6 +24,12 @@ class GameInput():
 			self.mpos.setc(event.pos[0], event.pos[1])
 			# print self.mpos
 
+		if event.type == pygame.MOUSEBUTTONDOWN:
+			self.mdown = True
+
+		if event.type == pygame.MOUSEBUTTONUP:
+			self.mdown = False
+
 		return True
 
 	def key_down(self, key):
@@ -31,8 +38,12 @@ class GameInput():
 				return True
 		return False
 
-	def mouse_pos():
+	def mouse_pos(self):
 		return self.mpos
+
+	def mouse_down(self):
+		return self.mdown
+
 
 # ##########################################################
 # Game class 

@@ -1,6 +1,6 @@
 # Filename game_objects.py 
 
-import pygame, os, sys
+import pygame, os, sys, re
 from pygame.locals import *
 
 # ##########################################################
@@ -100,6 +100,12 @@ class Tile(Entity):
 	def draw(self, canvas):
 		if self.status == Tile.STATUS_HOVER:
 			pygame.draw.rect(canvas, (180, 180, 180), (self.x, self.y, Tile.TILE_WIDTH, Tile.TILE_HEIGHT))
+		elif self.status == Tile.STATUS_CLICK:
+			pygame.draw.rect(canvas, (100, 100, 100), (self.x, self.y, Tile.TILE_WIDTH, Tile.TILE_HEIGHT))
+
+		if self.type == Tile.TYPE_SOLID:
+			pygame.draw.rect(canvas, (100, 40, 40), (self.x, self.y, Tile.TILE_WIDTH, Tile.TILE_HEIGHT))
+
 		return True
 
 # ##########################################################
@@ -125,6 +131,9 @@ class Map(Entity):
 			for y in range(self.rows):
 				self.tiles[x].append(Tile(x*self.tile_width, y*self.tile_height, x, y))
 
+
+		self.load_map("level_map/level0.map")
+
 	def draw(self, canvas):
 		for x in range(self.cols):
 			for y in range(self.rows):
@@ -148,17 +157,36 @@ class Map(Entity):
 			self.hover_tile.status = Tile.NONE
 
 		self.hover_tile = self.tiles[tile_x][tile_y]
-		self.hover_tile.status = Tile.STATUS_HOVER
+		self.hover_tile.status = Tile.STATUS_HOVER if args.mouse_down() == False else Tile.STATUS_CLICK
 
 	def load_map(self, filename):
+		re_comment = re.compile('^(\s)*?#.*$')
+		re_nothing = re.compile('^\s*$')
+
 		f = open('./level_map/level0.map')
 		trows = f.readlines()
 
+		current_row = 0
+		current_col = 0
+
 		for row in trows:
+			if re_comment.match(row):
+				continue
+			if re_nothing.match(row):
+				continue
+
 			arow = row.split(" ")
 
 			for tile in arow:
-				tile
+				tile_type = int(tile[0])
+				tile_style = int(tile[1:3])
 
+				self.tiles[current_col][current_row].type = tile_type
+				self.tiles[current_col][current_row].style = tile_style
+
+				current_col += 1
+
+			current_row += 1
+			current_col = 0
 
 # End of File game_objects.py
