@@ -10,3 +10,5 @@ it faster anway
 
 for the pathing i will find the next tile to move to, and then interpolate the current position of the entity that wants to move to the next position while checking 
 the position of all the other monsters on the field.
+
+Super helpful resource when working out the pathing for the monsters Check out the seperation which I have used: http://harry.me/2011/02/17/neat-algorithms---flocking/

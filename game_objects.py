@@ -28,6 +28,15 @@ class Vector2d():
 	def setc(self, x, y):
 		self.x, self.y = x, y
 
+	def distance(self, vec):
+		dx = self.x - vec.x
+		dy = self.y - vec.y
+
+		return math.sqrt(dx*dx + dy*dy)
+
+	def subtract(self, vec):
+		
+
 # ##########################################################
 # Entity class 
 # this is the class that will be the base class for all the drawable/movable objects on the screen
@@ -73,11 +82,12 @@ class Monster(Entity):
 		pygame.draw.rect(canvas, (0, 0, 0), (self.pos.x-5, self.pos.y-5, 10, 10))
 
 	def update(self, args):
-		path_list = args
-		self.find_next_pos(path_list)
+		path_list = args[0]
+		neighbors = args[1]
+		self.find_next_pos(path_list, neighbors)
 
 	# This will be the a* search from node to node so they dont have to search the entire map
-	def find_next_pos(self, path):
+	def find_next_pos(self, path, neighbors):
 		if pygame.Rect(self.pos.x, self.pos.y, 10, 10).collidepoint(self.target_pos.x, self.target_pos.y):
 			if (self.target_id + 1) % len(path) == 0:
 				self.target_id = 1
@@ -95,6 +105,15 @@ class Monster(Entity):
 
 		dx = math.cos(angle) * self.speed
 		dy = math.sin(angle) * self.speed
+
+		mean = []
+
+		for n in neighbors:
+			if n == self:
+				continue
+
+			if self.pos.distance(n.distance) < 8:
+				mean.append()
 
 		self.pos.x += dx
 		self.pos.y += dy
@@ -294,6 +313,6 @@ class Map(Entity):
 			current_row += 1
 			current_col = 0
 
-		self.enemies.append(Monster(self.path_nodes[0].center_x(), self.path_nodes[0].center_y(), self.path_nodes[1].center_x(), self.path_nodes[1].center_y()))
+		# self.enemies.append(Monster(self.path_nodes[0].center_x(), self.path_nodes[0].center_y(), self.path_nodes[1].center_x(), self.path_nodes[1].center_y()))
 
 # End of File game_objects.py
