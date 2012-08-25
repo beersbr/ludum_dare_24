@@ -54,6 +54,9 @@ class Vector2d():
 	def add(self, vec):
 		return Vector2d(self.x + vec.x, self.y + vec.y)
 
+	def multiply(self, scalar):
+		return Vector2d(self.x * scalar, self.y * scalar)
+
 
 # ##########################################################
 # Entity class 
@@ -123,37 +126,32 @@ class Monster(Entity):
 		# get the angle with respect to the horizontal axis between the two points
 		angle = math.atan2(diff_y, diff_x) # * 180 / math.pi # we are using radians
 
-		dx = math.cos(angle) * self.speed
-		dy = math.sin(angle) * self.speed
+		dx = math.cos(angle)# * self.speed
+		dy = math.sin(angle)# * self.speed
 
-		mean = []
+		count = 0
+		mean = Vector2d()
 
 		for n in neighbors:
 			if n == self:
 				continue
 
-			count = 0
-			mean = Vector2d()
 			distance = self.pos.distance(n.pos)
-			if distance < 8 and distance > 0:
+
+			if distance < 10 and distance > 0:
 				tv = Vector2d(self.pos.x, self.pos.y)
-				mean.add( tv.subtract(n.pos).normalize().divide(distance) )
+				mean = mean.add( tv.subtract(n.pos).normalize().divide(distance) )
 				count += 1
 
-		newv = mean.divide(count)
 		dirv = Vector2d(dx, dy)
-		# print str(newv) + "::" + str(dirv)
 
-		dirv.add(newv)
-		dirv = dirv.divide(2)
+		if count > 0:
+			newv = mean.divide(count)
+			dirv = dirv.add(newv)
+			dirv = dirv.divide(2)
 
-		angle2 = math.atan2(self.pos.x - newv.x, self.pos.y - newv.y)
-
-		self.pos.x += (dirv.x)# + math.cos(angle2) ) / 2
-		self.pos.y += (dirv.y)# + math.sin(angle2) ) / 2
-
-		# self.pos.x += math.cos(angle2)
-		# self.pos.y += math.sin(angle2)
+		self.pos.x += (dirv.x)
+		self.pos.y += (dirv.y)
 
 	def _find_next_pos(self):
 		pass
@@ -351,6 +349,6 @@ class Map(Entity):
 			current_col = 0
 
 		for x in range(20):
-			self.enemies.append(Monster(self.path_nodes[0].center_x()+random.randint(-10, 10), self.path_nodes[0].center_y()+random.randint(-10, 10), self.path_nodes[1].center_x(), self.path_nodes[1].center_y()))
+			self.enemies.append(Monster(self.path_nodes[0].center_x()+random.randint(-5, 5), self.path_nodes[0].center_y()+random.randint(-15, 15), self.path_nodes[1].center_x(), self.path_nodes[1].center_y()))
 
 # End of File game_objects.py
