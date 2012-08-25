@@ -2,6 +2,7 @@
 
 import pygame, os, sys, re, math
 from pygame.locals import *
+import random
 
 # ##########################################################
 # Vector2d Class 
@@ -36,24 +37,22 @@ class Vector2d():
 		return math.sqrt(dx*dx + dy*dy)
 
 	def subtract(self, vec):
-		self.x = self.x - vec.x
-		self.y = self.y - vec.y
-		return self
+		return Vector2d(self.x - vec.x, self.y - vec.y)
 
 	def normalize(self):
-		length = math.sqrt(self.x*self.x + self.y+self.y)
+		length = math.sqrt(self.x*self.x + self.y*self.y)
+		if length == 0:
+			return Vector2d(0, 0)
 		return Vector2d((self.x/length), (self.y/length))
 
 	def divide(self, scalar):
 		if scalar == 0:
-			return None
+			return self
 
 		return Vector2d(self.x/scalar, self.y/scalar)
 
 	def add(self, vec):
-		self.x = self.x + vec.x
-		self.y = self.y + vec.y
-		return self
+		return Vector2d(self.x + vec.x, self.y + vec.y)
 
 
 # ##########################################################
@@ -97,8 +96,10 @@ class Monster(Entity):
 		self.target_pos = Vector2d(target_x, target_y)
 		self.speed = 3
 
+		self.color = (random.randint(80, 255), random.randint(80, 255), random.randint(80, 255))
+
 	def draw(self, canvas):
-		pygame.draw.rect(canvas, (0, 0, 0), (self.pos.x-5, self.pos.y-5, 10, 10))
+		pygame.draw.rect(canvas, self.color, (self.pos.x-5, self.pos.y-5, 10, 10))
 
 	def update(self, args):
 		path_list = args[0]
@@ -131,17 +132,28 @@ class Monster(Entity):
 			if n == self:
 				continue
 
+			count = 0
+			mean = Vector2d()
 			distance = self.pos.distance(n.pos)
-			if distance < 8:
-				tv = Vector2d()
-				tv.setv(self.pos)
+			if distance < 8 and distance > 0:
+				tv = Vector2d(self.pos.x, self.pos.y)
+				mean.add( tv.subtract(n.pos).normalize().divide(distance) )
+				count += 1
 
-				mean.append( tv.subtract(n.pos).normalize().divide(distance) )
+		newv = mean.divide(count)
+		dirv = Vector2d(dx, dy)
+		# print str(newv) + "::" + str(dirv)
 
-		mean.
+		dirv.add(newv)
+		dirv = dirv.divide(2)
 
-		self.pos.x += dx
-		self.pos.y += dy
+		angle2 = math.atan2(self.pos.x - newv.x, self.pos.y - newv.y)
+
+		self.pos.x += (dirv.x)# + math.cos(angle2) ) / 2
+		self.pos.y += (dirv.y)# + math.sin(angle2) ) / 2
+
+		# self.pos.x += math.cos(angle2)
+		# self.pos.y += math.sin(angle2)
 
 	def _find_next_pos(self):
 		pass
@@ -339,6 +351,6 @@ class Map(Entity):
 			current_col = 0
 
 		for x in range(20):
-			self.enemies.append(Monster(self.path_nodes[0].center_x(), self.path_nodes[0].center_y(), self.path_nodes[1].center_x(), self.path_nodes[1].center_y()))
+			self.enemies.append(Monster(self.path_nodes[0].center_x()+random.randint(-10, 10), self.path_nodes[0].center_y()+random.randint(-10, 10), self.path_nodes[1].center_x(), self.path_nodes[1].center_y()))
 
 # End of File game_objects.py
