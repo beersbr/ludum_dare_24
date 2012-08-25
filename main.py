@@ -1,5 +1,6 @@
 import pygame, os, sys
 from pygame.locals import *
+from game_objects import *
 
 # ##########################################################
 # GameInput class
@@ -42,7 +43,9 @@ class Game():
 
 
 	def update(self):
-		pass
+		if self.input.key_down(K_ESCAPE):
+			self.running = False
+			return
 
 	def cleanup(self):
 		pygame.quit()
