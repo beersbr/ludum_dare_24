@@ -9,7 +9,7 @@ from pygame.locals import *
 # plane
 # ##########################################################
 class Vector2d():
-	def __init__(self, _x, _y):
+	def __init__(self, _x = 0, _y = 0):
 		self.x, self.y = _x, _y
 
 	def __str__(self):
@@ -27,6 +27,7 @@ class Vector2d():
 
 	def setc(self, x, y):
 		self.x, self.y = x, y
+		return self
 
 	def distance(self, vec):
 		dx = self.x - vec.x
@@ -35,7 +36,25 @@ class Vector2d():
 		return math.sqrt(dx*dx + dy*dy)
 
 	def subtract(self, vec):
-		
+		self.x = self.x - vec.x
+		self.y = self.y - vec.y
+		return self
+
+	def normalize(self):
+		length = math.sqrt(self.x*self.x + self.y+self.y)
+		return Vector2d((self.x/length), (self.y/length))
+
+	def divide(self, scalar):
+		if scalar == 0:
+			return None
+
+		return Vector2d(self.x/scalar, self.y/scalar)
+
+	def add(self, vec):
+		self.x = self.x + vec.x
+		self.y = self.y + vec.y
+		return self
+
 
 # ##########################################################
 # Entity class 
@@ -112,8 +131,14 @@ class Monster(Entity):
 			if n == self:
 				continue
 
-			if self.pos.distance(n.distance) < 8:
-				mean.append()
+			distance = self.pos.distance(n.pos)
+			if distance < 8:
+				tv = Vector2d()
+				tv.setv(self.pos)
+
+				mean.append( tv.subtract(n.pos).normalize().divide(distance) )
+
+		mean.
 
 		self.pos.x += dx
 		self.pos.y += dy
@@ -274,7 +299,7 @@ class Map(Entity):
 		self.hover_tile.status = Tile.STATUS_HOVER if args.mouse_down() == False else Tile.STATUS_CLICK
 
 		for enemy in self.enemies:
-			enemy.update(self.path_nodes)
+			enemy.update((self.path_nodes, self.enemies))
 
 	def load_map(self, filename):
 		re_comment = re.compile('^(\s)*?#.*$')
@@ -313,6 +338,7 @@ class Map(Entity):
 			current_row += 1
 			current_col = 0
 
-		# self.enemies.append(Monster(self.path_nodes[0].center_x(), self.path_nodes[0].center_y(), self.path_nodes[1].center_x(), self.path_nodes[1].center_y()))
+		for x in range(20):
+			self.enemies.append(Monster(self.path_nodes[0].center_x(), self.path_nodes[0].center_y(), self.path_nodes[1].center_x(), self.path_nodes[1].center_y()))
 
 # End of File game_objects.py
