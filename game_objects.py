@@ -61,7 +61,7 @@ class Monster():
 
 	def __init__(self, pos_x, pos_y):
 		self.pos = Vector2d(pos_x, pos_y)
-		self.id = 
+		self.id = 0
 
 	def draw(self, canvas):
 		pass
@@ -120,13 +120,15 @@ class Map(Entity):
 
 		self.hover_tile = None
 
-		for y in range(self.rows):
-			for x in range(self.cols):
-				self.tiles.append(Tile(x*self.tile_width, y*self.tile_height, x, y))
+		for x in range(self.cols):
+			self.tiles.append([])
+			for y in range(self.rows):
+				self.tiles[x].append(Tile(x*self.tile_width, y*self.tile_height, x, y))
 
 	def draw(self, canvas):
-		for t in self.tiles:
-			t.draw(canvas)
+		for x in range(self.cols):
+			for y in range(self.rows):
+				self.tiles[x][y].draw(canvas)
 
 		return True
 
@@ -137,16 +139,26 @@ class Map(Entity):
 		pass
 
 	def update(self, args):
-		tile_x = 0 if args.mpos.x == 0 else (args.mpos.x / Tile.TILE_WIDTH)
-		tile_y = 0 if args.mpos.y == 0 else (args.mpos.y / Tile.TILE_HEIGHT)
+		tile_x = (args.mpos.x / Tile.TILE_WIDTH)
+		tile_y = (args.mpos.y / Tile.TILE_HEIGHT)
 
-		tile_index = (tile_y) * self.cols + (tile_x)
+		# tile_index = (tile_y) * self.cols + (tile_x)
 
 		if self.hover_tile != None:
 			self.hover_tile.status = Tile.NONE
 
-		self.hover_tile = self.tiles[tile_index]
+		self.hover_tile = self.tiles[tile_x][tile_y]
 		self.hover_tile.status = Tile.STATUS_HOVER
+
+	def load_map(self, filename):
+		f = open('./level_map/level0.map')
+		trows = f.readlines()
+
+		for row in trows:
+			arow = row.split(" ")
+
+			for tile in arow:
+				tile
 
 
 # End of File game_objects.py
