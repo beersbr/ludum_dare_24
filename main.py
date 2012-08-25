@@ -10,12 +10,20 @@ from game_objects import *
 class GameInput():
 	def __init__(self):
 		self._keys = {}
+		self.mpos = Vector2d(-1, -1)
 
 	def consume(self, event):
 		if event.type == pygame.KEYDOWN:
 			self._keys[event.key] = True
+
 		if event.type == pygame.KEYUP:
 			self._keys[event.key] = False
+
+		if event.type == pygame.MOUSEMOTION:
+			self.mpos.setc(event.pos[0], event.pos[1])
+			# print self.mpos
+
+		return True
 
 	def key_down(self, key):
 		if key in self._keys.keys():
@@ -23,29 +31,35 @@ class GameInput():
 				return True
 		return False
 
+	def mouse_pos():
+		return self.mpos
+
 # ##########################################################
 # Game class 
 # This object will take care of maintaining the game state
 # ##########################################################
 class Game():
 	def __init__(self, res_x = 800, res_y = 600, fullscreen = False):
-		self._res = self._res_x, self._res_y = res_x, res_y
+		self.res = self.res_x, self.res_y = res_x, res_y
 		self.running = True
 		self.input = GameInput()
+		self.map = Map(40, 30, self.res_x, self.res_y)
 
 	def game_init(self):
 		pygame.init()
 		pygame.display.set_caption('LudumDare 24 :: Evolution')
-		self.canvas = pygame.display.set_mode(self._res, pygame.HWSURFACE | pygame.DOUBLEBUF)
+		self.canvas = pygame.display.set_mode(self.res, pygame.HWSURFACE | pygame.DOUBLEBUF)
 
 	def draw(self):
-		pass
+		self.map.draw(self.canvas)
 
 
 	def update(self):
 		if self.input.key_down(K_ESCAPE):
 			self.running = False
-			return
+			return False
+
+		self.map.update(self.input)
 
 	def cleanup(self):
 		pygame.quit()
