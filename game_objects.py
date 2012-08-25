@@ -48,6 +48,34 @@ class Entity():
 	def update(self, args):
 		pass
 
+# ##########################################################
+# Monster Class 
+# this is the class that will take care of all my monsters. I'm thinking just one monster class and
+# give the monster an id which will determin style and behavior
+# ##########################################################
+class Monster():
+	NONE = 0
+	NORMAL = 1
+	FAST = 2
+	HEAVY = 4
+
+	def __init__(self, pos_x, pos_y):
+		self.pos = Vector2d(pos_x, pos_y)
+		self.id = 
+
+	def draw(self, canvas):
+		pass
+
+	def update(self, args):
+		pass
+
+
+
+# ##########################################################
+# Tile class 
+# This is the object that will hold tiles and the status of a tile. This is just a holder and nothing else.
+# The plan is to have the tiles take on a style... we'll see if that remains the case as the night goes on.
+# ##########################################################
 class Tile(Entity):
 	NONE 		= 0
 	STATUS_HOVER  = 1
@@ -97,10 +125,6 @@ class Map(Entity):
 				self.tiles.append(Tile(x*self.tile_width, y*self.tile_height, x, y))
 
 	def draw(self, canvas):
-		# for x in range(0, self.cols):
-		# 	for y in range(0, self.rows):
-		# 		pygame.draw.rect(canvas, (255, 255, 255), (x * self.tile_width, y * self.tile_height, self.tile_width, self.tile_height), 1)
-
 		for t in self.tiles:
 			t.draw(canvas)
 
@@ -122,9 +146,6 @@ class Map(Entity):
 			self.hover_tile.status = Tile.NONE
 
 		self.hover_tile = self.tiles[tile_index]
-
-		print self.hover_tile.fx, self.hover_tile.fy
-
 		self.hover_tile.status = Tile.STATUS_HOVER
 
 
