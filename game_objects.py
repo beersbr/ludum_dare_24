@@ -69,6 +69,9 @@ class Monster():
 	def update(self, args):
 		pass
 
+	# This will be the a* search from node to node so they dont have to search the entire map
+	def find_next_pos(self):
+		pass
 
 
 # ##########################################################
@@ -96,6 +99,7 @@ class Tile(Entity):
 		self.status = Tile.NONE
 		self.style = Tile.NONE
 		self.type = Tile.NONE
+		self.path_node_number = -1
 
 	def draw(self, canvas):
 		if self.status == Tile.STATUS_HOVER:
@@ -107,6 +111,12 @@ class Tile(Entity):
 			pygame.draw.rect(canvas, (100, 40, 40), (self.x, self.y, Tile.TILE_WIDTH, Tile.TILE_HEIGHT))
 
 		return True
+
+	def update(self, args):
+		pass
+
+	def is_path_node(self):
+		return (True if Tile.path_node_number else False)
 
 # ##########################################################
 # Map class
@@ -120,6 +130,7 @@ class Map(Entity):
 		self.tile_width = self.width / self.cols
 		self.tile_height = self.height / self.rows
 		self.tiles = []
+		self.path_nodes = []
 
 		Tile.TILE_WIDTH = self.tile_width
 		Tile.TILE_HEIGHT = self.tile_height
@@ -175,11 +186,12 @@ class Map(Entity):
 			if re_nothing.match(row):
 				continue
 
-			arow = row.split(" ")
+			arow = row.strip().split(" ")
 
 			for tile in arow:
 				tile_type = int(tile[0])
 				tile_style = int(tile[1:3])
+				tile_path = int(tile[3:5])
 
 				self.tiles[current_col][current_row].type = tile_type
 				self.tiles[current_col][current_row].style = tile_style
