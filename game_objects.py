@@ -53,7 +53,7 @@ class Entity():
 # this is the class that will take care of all my monsters. I'm thinking just one monster class and
 # give the monster an id which will determin style and behavior
 # ##########################################################
-class Monster():
+class Monster(Entity):
 	NONE = 0
 	NORMAL = 1
 	FAST = 2
@@ -62,6 +62,7 @@ class Monster():
 	def __init__(self, pos_x, pos_y):
 		self.pos = Vector2d(pos_x, pos_y)
 		self.id = 0
+		self.health = 10
 
 	def draw(self, canvas):
 		pass
@@ -73,6 +74,41 @@ class Monster():
 	def find_next_pos(self):
 		pass
 
+# ##########################################################
+# Tower Class 
+# This is the object that will produce the bullets that will follow and kills the enemies
+# ##########################################################
+class Tower(Entity):
+	def __init__(self, pos_x, pos_y):
+		self.pos = Vector2d(pos_x, pos_y)
+		self.id = 0
+		self.cost = 10
+		self.damage = 1
+		self.shoot_frequency = 10
+
+	def draw(self, canvas):
+		pass
+
+	def update(self, args):
+		pass
+
+# ##########################################################
+# Bullet Class
+# This is the object produced by the tower and the item responsible for
+# hitting the enemies.
+# ##########################################################
+class Bullet(Entity):
+	def __init__(self, pos_x, pos_y):
+		self.pos = Vector2d(pos_x, pos_y)
+		self.id = 0
+		self.damage = 1
+		self.speed = 1
+
+	def draw(self, canvas):
+		pass
+
+	def update(self, args):
+		pass
 
 # ##########################################################
 # Tile class 
@@ -195,6 +231,7 @@ class Map(Entity):
 
 				self.tiles[current_col][current_row].type = tile_type
 				self.tiles[current_col][current_row].style = tile_style
+				# Here I will grab the each path nodes location
 
 				current_col += 1
 
