@@ -25,9 +25,11 @@ class GameInput():
 			# print self.mpos
 
 		if event.type == pygame.MOUSEBUTTONDOWN:
+			pygame.mouse.set_visible(False)
 			self.mdown = True
 
 		if event.type == pygame.MOUSEBUTTONUP:
+			pygame.mouse.set_visible(True)
 			self.mdown = False
 
 		return True
@@ -63,7 +65,6 @@ class Game():
 
 	def draw(self):
 		self.map.draw(self.canvas)
-
 
 	def update(self):
 		if self.input.key_down(K_ESCAPE):

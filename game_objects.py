@@ -1,6 +1,6 @@
 # Filename game_objects.py 
 
-import pygame, os, sys, re
+import pygame, os, sys, re, math
 from pygame.locals import *
 
 # ##########################################################
@@ -52,6 +52,8 @@ class Entity():
 # Monster Class 
 # this is the class that will take care of all my monsters. I'm thinking just one monster class and
 # give the monster an id which will determin style and behavior
+#
+# unline the other object the center of the bullet will be the x and y
 # ##########################################################
 class Monster(Entity):
 	NONE = 0
@@ -59,19 +61,45 @@ class Monster(Entity):
 	FAST = 2
 	HEAVY = 4
 
-	def __init__(self, pos_x, pos_y):
+	def __init__(self, pos_x, pos_y, target_x, target_y):
 		self.pos = Vector2d(pos_x, pos_y)
 		self.id = 0
 		self.health = 10
+		self.target_id = 1
+		self.target_pos = Vector2d(target_x, target_y)
+		self.speed = 3
 
 	def draw(self, canvas):
-		pass
+		pygame.draw.rect(canvas, (0, 0, 0), (self.pos.x-5, self.pos.y-5, 10, 10))
 
 	def update(self, args):
-		pass
+		path_list = args
+		self.find_next_pos(path_list)
 
 	# This will be the a* search from node to node so they dont have to search the entire map
-	def find_next_pos(self):
+	def find_next_pos(self, path):
+		if pygame.Rect(self.pos.x, self.pos.y, 10, 10).collidepoint(self.target_pos.x, self.target_pos.y):
+			if (self.target_id + 1) % len(path) == 0:
+				self.target_id = 1
+				self.target_pos.setc(path[self.target_id].center_x(), path[self.target_id].center_y())
+				self.pos.setc(path[0].center_x(), path[0].center_y())
+			else:
+				self.target_id = self.target_id + 1
+				self.target_pos.setc(path[self.target_id].center_x(), path[self.target_id].center_y())
+
+		diff_y = (self.target_pos.y - self.pos.y)
+		diff_x = (self.target_pos.x - self.pos.x)
+
+		# get the angle with respect to the horizontal axis between the two points
+		angle = math.atan2(diff_y, diff_x) # * 180 / math.pi # we are using radians
+
+		dx = math.cos(angle) * self.speed
+		dy = math.sin(angle) * self.speed
+
+		self.pos.x += dx
+		self.pos.y += dy
+
+	def _find_next_pos(self):
 		pass
 
 # ##########################################################
@@ -89,6 +117,7 @@ class Tower(Entity):
 	def draw(self, canvas):
 		pass
 
+	# list of enemies
 	def update(self, args):
 		pass
 
@@ -135,16 +164,23 @@ class Tile(Entity):
 		self.status = Tile.NONE
 		self.style = Tile.NONE
 		self.type = Tile.NONE
-		self.path_node_number = -1
+		self.path_id = 0
 
 	def draw(self, canvas):
+		if self.type == Tile.TYPE_SOLID:
+			pygame.draw.rect(canvas, (100, 40, 40), (self.x, self.y, Tile.TILE_WIDTH, Tile.TILE_HEIGHT))
+		elif self.type == Tile.TYPE_PLOT:
+			pygame.draw.rect(canvas, (40, 40, 100), (self.x, self.y, Tile.TILE_WIDTH, Tile.TILE_HEIGHT))
+		elif self.type == Tile.TYPE_WALKABLE:
+			pygame.draw.rect(canvas, (40, 100, 40), (self.x, self.y, Tile.TILE_WIDTH, Tile.TILE_HEIGHT))
+
+		if self.path_id > 0:
+			pygame.draw.rect(canvas, (40, 150, 150), (self.x, self.y, Tile.TILE_WIDTH, Tile.TILE_HEIGHT))
+
 		if self.status == Tile.STATUS_HOVER:
 			pygame.draw.rect(canvas, (180, 180, 180), (self.x, self.y, Tile.TILE_WIDTH, Tile.TILE_HEIGHT))
 		elif self.status == Tile.STATUS_CLICK:
 			pygame.draw.rect(canvas, (100, 100, 100), (self.x, self.y, Tile.TILE_WIDTH, Tile.TILE_HEIGHT))
-
-		if self.type == Tile.TYPE_SOLID:
-			pygame.draw.rect(canvas, (100, 40, 40), (self.x, self.y, Tile.TILE_WIDTH, Tile.TILE_HEIGHT))
 
 		return True
 
@@ -153,6 +189,12 @@ class Tile(Entity):
 
 	def is_path_node(self):
 		return (True if Tile.path_node_number else False)
+
+	def center_x(self):
+		return (self.x + (Tile.TILE_WIDTH/2))
+
+	def center_y(self):
+		return (self.y + (Tile.TILE_HEIGHT/2))
 
 # ##########################################################
 # Map class
@@ -167,6 +209,9 @@ class Map(Entity):
 		self.tile_height = self.height / self.rows
 		self.tiles = []
 		self.path_nodes = []
+
+		self.enemies = []
+		self.towers = []
 
 		Tile.TILE_WIDTH = self.tile_width
 		Tile.TILE_HEIGHT = self.tile_height
@@ -185,6 +230,9 @@ class Map(Entity):
 		for x in range(self.cols):
 			for y in range(self.rows):
 				self.tiles[x][y].draw(canvas)
+
+		for enemy in self.enemies:
+			enemy.draw(canvas)
 
 		return True
 
@@ -205,6 +253,9 @@ class Map(Entity):
 
 		self.hover_tile = self.tiles[tile_x][tile_y]
 		self.hover_tile.status = Tile.STATUS_HOVER if args.mouse_down() == False else Tile.STATUS_CLICK
+
+		for enemy in self.enemies:
+			enemy.update(self.path_nodes)
 
 	def load_map(self, filename):
 		re_comment = re.compile('^(\s)*?#.*$')
@@ -229,13 +280,20 @@ class Map(Entity):
 				tile_style = int(tile[1:3])
 				tile_path = int(tile[3:5])
 
-				self.tiles[current_col][current_row].type = tile_type
-				self.tiles[current_col][current_row].style = tile_style
-				# Here I will grab the each path nodes location
+				current_tile = self.tiles[current_col][current_row]
+
+				current_tile.type = tile_type
+				current_tile.style = tile_style
+				current_tile.path_id = tile_path
+
+				if tile_path > 0:
+					self.path_nodes.append(current_tile)
 
 				current_col += 1
 
 			current_row += 1
 			current_col = 0
+
+		self.enemies.append(Monster(self.path_nodes[0].center_x(), self.path_nodes[0].center_y(), self.path_nodes[1].center_x(), self.path_nodes[1].center_y()))
 
 # End of File game_objects.py
