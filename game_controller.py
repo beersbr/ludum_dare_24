@@ -31,7 +31,7 @@ class Controller():
 					map.towers.append(newTower)
 					self.state = Controller.IDLE
 					print "Tower created!\n"
-		if input.key_down(K_1):
+		if input.key_down(K_1) and self.state == Controller.IDLE: 
 			self.state = Controller.PLACE_TOWER
 			self.selectedTower = 0 #first tower.
 			print "STATE CHANGE TO PLACE TOWER"
