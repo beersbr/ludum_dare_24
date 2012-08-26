@@ -24,13 +24,13 @@ class UInterface():
 # TowerData Class 
 # structure encapsulating tower data. Need to initialize a structure of these and give it to the controller
 # ##########################################################
-def TowerData():
-	def __init__(self)
+class TowerData():
+	def __init__(self):
 		self.cost = 0
 		self.damage = 0
 		self.range = 0
 		self.shoot_frequency = 0
-	def set_props(cost, dam, ran, sfreq):
+	def set_props(self, cost, dam, ran, sfreq):
 		self.cost = cost
 		self.damage = dam
 		self.range = ran
