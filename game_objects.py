@@ -225,6 +225,7 @@ class Tower(Entity):
 		self.damage = towerData.damage
 		self.range = towerData.range
 		self.shoot_frequency = towerData.shoot_frequency
+		self.splash = towerData.splash_range
 		self.tile = target_tile
 		self.name = towerData.name
 
