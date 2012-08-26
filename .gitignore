@@ -1,0 +1,6 @@
+*.pyc 
+*.pyc
+
+game_objects.pyc
+
+game_controller.pyc
