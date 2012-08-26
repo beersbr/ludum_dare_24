@@ -20,6 +20,23 @@ class UInterface():
 	def update(self, args):
 		pass
 
+		
+# ##########################################################
+# BulletData Class 
+# structure encapsulating bullet data! Towers will have it. Need to be Initialized
+# ##########################################################	
+class BulletData():
+	def __init__(self):
+		self.id = 0 #should correspond to index, or type
+		self.damage = 0
+		self.speed = 0
+		self.tracking = False
+	def set_props(self, id, dam, speed, track):
+		self.id = id
+		self.damage = dam
+		self.speed = speed
+		self.tracking = track
+
 # ##########################################################
 # TowerData Class 
 # structure encapsulating tower data. Need to initialize a structure of these and give it to the controller
@@ -27,12 +44,14 @@ class UInterface():
 class TowerData():
 	def __init__(self):
 		self.cost = 0
-		self.damage = 0
+		#self.damage = 0  #Bullet should have this
 		self.range = 0
 		self.shoot_frequency = 0
-	def set_props(self, cost, dam, ran, sfreq):
+		self.bullet_data = None
+	def set_props(self, bullet_data, cost, ran, sfreq):
 		self.cost = cost
-		self.damage = dam
+		#self.damage = dam
+		self.bullet_data = bullet_data
 		self.range = ran
 		self.shoot_frequency = sfreq
 		
@@ -196,21 +215,36 @@ class Monster(Entity):
 class Tower(Entity):
 	def __init__(self, target_tile, towerData):
 		self.pos = Vector2d(target_tile.x, target_tile.y)
-		self.id = 0 # Change this
+		self.id = 0 # Change this || this should maybe correspond to tower type?
 		self.cost = towerData.cost
-		self.damage = towerData.damage
+		#self.damage = towerData.damage
 		self.range = towerData.range
 		self.shoot_frequency = towerData.shoot_frequency
 		self.tile = target_tile
 		self.color = (random.randint(80, 255), random.randint(80, 255), random.randint(80, 255)) #temporary
+		self.curFrameCount = 0
+		self.bullet_data = towerData.bullet_data
 		print "Tower created at (" + str(self.tile.x) + "," + str(self.tile.y) + ")"
 
 	def draw(self, canvas):
 		pygame.draw.rect(canvas, self.color, (self.tile.x, self.tile.y, self.tile.TILE_WIDTH, self.tile.TILE_HEIGHT))
 
 	# list of enemies
-	def update(self, args):
-		pass
+	def update(self, map):
+		#check to see if and when we need to fire.
+		self.curFrameCount += 1
+		if self.curFrameCount == self.shoot_frequency:
+			#make a shot, reset curFrameCount
+			#find our target
+			target = map.get_closest_monster(self.pos, self.range)
+			if target != None:
+				#print "Bullet being created!"
+				#we need to look within our range, and hopefully at a map object.
+				tmpBullet = Bullet(self.bullet_data, target, self.pos.x, self.pos.y)
+				map.bullets.append(tmpBullet)
+			#else we don't have a target to shoot, so calm the fuck down
+			self.curFrameCount = 0
+			
 
 # ##########################################################
 # Bullet Class
@@ -218,17 +252,48 @@ class Tower(Entity):
 # hitting the enemies.
 # ##########################################################
 class Bullet(Entity):
-	def __init__(self, pos_x, pos_y):
+	TRAVEL = 0
+	HIT = 1
+	def __init__(self, bullet_data, target, pos_x, pos_y):
 		self.pos = Vector2d(pos_x, pos_y)
-		self.id = 0
-		self.damage = 1
-		self.speed = 1
+		self.target = target #should be an entity, that has a position we want to reach
+		self.stats = bullet_data
+		self.status = Bullet.TRAVEL
+		#self.id = 0 #This should be type
+
 
 	def draw(self, canvas):
-		pass
+		#draw a small rectangle
+		pygame.draw.rect(canvas, pygame.Color(255, 0, 0, 1), (self.pos.x, self.pos.y, 8, 8))
 
-	def update(self, args):
-		pass
+	def update(self):
+		#update position, should make a delta between it and the target		# -------> + 
+		#																	  |
+		#																	  |
+		#																	  v
+		#																	  +
+		dX, dY = 0, 0
+		tX, tY = self.target.pos.x, self.target.pos.y
+		bX, bY = self.pos.x, self.pos.y
+		ddX, ddY = abs(tX - bX), abs(tY - bY)
+		dist = math.sqrt((ddX * ddX) + (ddY * ddY))
+		#print "target: (" + str(tX) + "," + str(tY) + ") bullet: (" + str(bX) + "," + str(bY) + ")"
+		#Need to figure out where we are in relation to the enemy (right or left, front or behind)
+		if bX > tX: # bullet is to the right of target, needs to go left
+			dX = bX - self.stats.speed #Don't know if this is the best way
+		else:
+			dX = bX + self.stats.speed
+		if bY > tY: #bullet is in front, need to go up
+			dY = bY - self.stats.speed
+		else:
+			dY = bY + self.stats.speed
+		if (ddX < .7 or ddY < .7):
+			#print "BULLET HAS HIT"
+			self.status = Bullet.HIT #Map should get rid of us
+		#Make the change!
+		self.pos.x = dX
+		self.pos.y = dY
+		
 
 # ##########################################################
 # Tile class 
@@ -303,6 +368,7 @@ class Map(Entity):
 
 		self.enemies = []
 		self.towers = []
+		self.bullets = []
 
 		Tile.TILE_WIDTH = self.tile_width
 		Tile.TILE_HEIGHT = self.tile_height
@@ -330,6 +396,8 @@ class Map(Entity):
 			
 		for tower in self.towers:
 			tower.draw(canvas)
+		for bullet in self.bullets:
+			bullet.draw(canvas)
 
 		return True
 
@@ -353,6 +421,12 @@ class Map(Entity):
 
 		for enemy in self.enemies:
 			enemy.update((self.path_nodes, self.enemies))
+		for tower in self.towers:
+			tower.update(self)
+		for bullet in self.bullets:
+			bullet.update()
+			if bullet.status == Bullet.HIT:
+				self.bullets.remove(bullet)
 
 	def load_map(self, filename):
 		re_comment = re.compile('^(\s)*?#.*$')
@@ -393,5 +467,20 @@ class Map(Entity):
 
 		for x in range(20):
 			self.enemies.append(Monster(self.path_nodes[0].center_x()+random.randint(-5, 5), self.path_nodes[0].center_y()+random.randint(-15, 15), self.path_nodes[1].center_x(), self.path_nodes[1].center_y()))
+	def get_closest_monster(self, point, range):
+		toRet = None
+		minRange = 9999
+		for en in self.enemies:
+			dX, dY = abs(point.x - en.pos.x), abs(point.y - en.pos.y)
+			dist = math.sqrt((dX*dX) + (dY*dY))
+			#print "Checking enemy with distance (" + str(dX) + "," + str(dY) + ") Range is : " + str(range) + "calc distances is : " + str(dist)
+			if dist > range:
+				continue
+			if dist < minRange:
+				minRange = dist
+				toRet = en
+		return toRet
+				
+		
 
 # End of File game_objects.py

@@ -63,11 +63,17 @@ class Game():
 		self.running = True
 		self.input = GameInput()
 		self.map = Map(40, 30, self.res_x, self.res_y)
+
+	def init_bullets(self):
+		#Like towers, but with bullets
+		tmpBullet = BulletData()
+		tmpBullet.set_props(0, 1, 5, False)
+		return [tmpBullet]
 		
-	def init_towers(self):
+	def init_towers(self, bullet_list):
 		#We can do this however, just return a list of TowerData objects
 		tmpTower = TowerData()
-		tmpTower.set_props(1, 10, 5, 10)
+		tmpTower.set_props(bullet_list[0], 50, 100, 30)
 		return [tmpTower]
 
 	def game_init(self):
@@ -75,7 +81,8 @@ class Game():
 		pygame.display.set_icon(pygame.image.load("./images/icon.png"))
 		pygame.display.set_caption('LudumDare 24 :: Evolution')
 		self.canvas = pygame.display.set_mode(self.res, pygame.HWSURFACE | pygame.DOUBLEBUF)
-		tData = self.init_towers()
+		bData = self.init_bullets()
+		tData = self.init_towers(bData)
 		self.controller = Controller(tData)
 
 	def draw(self):
