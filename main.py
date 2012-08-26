@@ -62,12 +62,7 @@ class Game():
 		self.running = True
 		self.input = GameInput()
 		self.map = Map(40, 30, self.res_x, self.res_y)
-
-	def init_bullets(self):
-		#Like towers, but with bullets
-		tmpBullet = BulletData()
-		tmpBullet.set_props(0, 1, 5, False, False, 0)
-		return [tmpBullet]
+		self.clock = pygame.time.Clock()
 		
 	def init_towers(self):
 		#We can do this however, just return a list of TowerData objects
@@ -136,6 +131,7 @@ class Game():
 			self.running = False
 
 		while self.running:
+			self.clock.tick(60)
 			for event in pygame.event.get():
 				self.gather_events(event)
 
