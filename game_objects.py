@@ -195,16 +195,18 @@ class Monster(Entity):
 # ##########################################################
 class Tower(Entity):
 	def __init__(self, target_tile, towerData):
-		self.pos = Vector2d(pos_x, pos_y)
+		self.pos = Vector2d(target_tile.x, target_tile.y)
 		self.id = 0 # Change this
 		self.cost = towerData.cost
 		self.damage = towerData.damage
 		self.range = towerData.range
-		self.shoot_frequency = towerData.sFreq
+		self.shoot_frequency = towerData.shoot_frequency
 		self.tile = target_tile
+		self.color = (random.randint(80, 255), random.randint(80, 255), random.randint(80, 255)) #temporary
+		print "Tower created at (" + str(self.tile.x) + "," + str(self.tile.y) + ")"
 
 	def draw(self, canvas):
-		pass
+		pygame.draw.rect(canvas, self.color, (self.tile.x, self.tile.y, self.tile.TILE_WIDTH, self.tile.TILE_HEIGHT))
 
 	# list of enemies
 	def update(self, args):
