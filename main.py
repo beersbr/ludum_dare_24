@@ -88,7 +88,7 @@ class Game():
 			
 			td = TowerData(bullets[0])
 
-			td.set_props(tower[0], tower[1], tower[2], tower[3], tower[4])
+			td.set_props(tower[0], int(tower[1]), int(tower[2]), int(tower[3]), int(tower[4]))
 			towers.append(td)
 
 		f.closed

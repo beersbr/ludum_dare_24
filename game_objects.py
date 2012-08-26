@@ -514,6 +514,7 @@ class Map(Entity):
 
 		for x in range(20):
 			self.enemies.append(Monster(self.path_nodes[0].center_x()+random.randint(-5, 5), self.path_nodes[0].center_y()+random.randint(-15, 15), self.path_nodes[1].center_x(), self.path_nodes[1].center_y()))
+			
 	def get_closest_monster(self, point, range):
 		toRet = None
 		minRange = 9999
