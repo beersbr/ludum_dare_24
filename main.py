@@ -24,7 +24,6 @@ class GameInput():
 
 		if event.type == pygame.MOUSEMOTION:
 			self.mpos.setc(event.pos[0], event.pos[1])
-			# print self.mpos
 
 		if event.type == pygame.MOUSEBUTTONDOWN:
 			pygame.mouse.set_visible(False)
@@ -67,25 +66,52 @@ class Game():
 	def init_bullets(self):
 		#Like towers, but with bullets
 		tmpBullet = BulletData()
-		tmpBullet.set_props(0, 1, 5, False)
+		tmpBullet.set_props(0, 1, 5, False, False, 0)
 		return [tmpBullet]
 		
-	def init_towers(self, bullet_list):
+	def init_towers(self):
 		#We can do this however, just return a list of TowerData objects
-		tmpTower = TowerData()
-		tmpTower.set_props(bullet_list[0], 50, 100, 30)
-		return [tmpTower]
+		re_comment = re.compile('^(\s)*?#.*$')
+		re_nothing = re.compile('^\s*$')
+		towers = []
+		bullets = []
+		
+
+		f = open("./level_map/towers")
+		lines = f.readlines()
+
+		for line in lines:
+			if re_comment.match(line):
+				continue
+			if re_nothing.match(line):
+				continue
+
+			tower = line.strip().split(" ")
+			bd = BulletData()
+			bd.set_props(0, 10, 5, False, False, tower[5])
+			bullets.append(bd)
+			
+			td = TowerData(bullets[0])
+
+			td.set_props(tower[0], tower[1], tower[2], tower[3], tower[4])
+			towers.append(td)
+
+		f.closed
+
+		return towers
 
 	def game_init(self):
 		pygame.init()
 		pygame.display.set_icon(pygame.image.load("./images/icon.png"))
 		pygame.display.set_caption('LudumDare 24 :: Evolution')
 		self.canvas = pygame.display.set_mode(self.res, pygame.HWSURFACE | pygame.DOUBLEBUF)
-		bData = self.init_bullets()
-		tData = self.init_towers(bData)
+		tData = self.init_towers()
 		self.controller = Controller(tData)
+		self.ui = UInterface()
+		self.ui.get_towers(tData)
 
 	def draw(self):
+		self.ui.draw(self.canvas)
 		self.map.draw(self.canvas)
 
 	def update(self):

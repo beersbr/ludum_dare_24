@@ -11,8 +11,33 @@ import random
 class UInterface():
 	def __init__(self):
 		self.game_name = "Something"
-		self.surface = pygame.Surface((200, 600))
-		self.surface.fill((255, 255, 255))
+		self.surface = pygame.image.load("./images/ui_background.png")
+		self.towers_info = []
+
+	def get_towers(self, towers):
+
+		tfont = pygame.font.SysFont('monoco', 16)
+
+		current_y = 30
+		cur_tower = 1
+		for tower in towers:
+
+			key_num = str(cur_tower)
+
+			self.surface.blit(tfont.render(key_num, True, (80, 80, 80), (255, 255, 255)), (25, current_y+7))
+
+			filename = "./images/"+tower.name+".png"
+
+			if os.path.isfile(filename):
+				image = pygame.image.load(filename)
+				self.surface.blit(image, (40, current_y))
+
+			tower_name = tower.name.replace("_", " ")
+			self.surface.blit(tfont.render(tower_name, True, (80, 80, 80), (255,255,255)), (70, current_y+5))
+
+			current_y += 30
+			cur_tower += 1
+
 
 	def draw(self, canvas):
 		canvas.blit(self.surface, (600, 0))
@@ -31,27 +56,33 @@ class BulletData():
 		self.damage = 0
 		self.speed = 0
 		self.tracking = False
-	def set_props(self, id, dam, speed, track):
+		self.splash = False
+	def set_props(self, id, dam, speed, track, splash, splash_range):
 		self.id = id
 		self.damage = dam
 		self.speed = speed
 		self.tracking = track
+		self.splash = splash
+		self.splash_range = splash_range
 
 # ##########################################################
 # TowerData Class 
 # structure encapsulating tower data. Need to initialize a structure of these and give it to the controller
 # ##########################################################
 class TowerData():
-	def __init__(self):
+	def __init__(self, bullet_data):
+		self.name = "<NO NAME>"
 		self.cost = 0
 		#self.damage = 0  #Bullet should have this
 		self.range = 0
 		self.shoot_frequency = 0
-		self.bullet_data = None
-	def set_props(self, bullet_data, cost, ran, sfreq):
+		self.bullet_data = bullet_data
+
+	def set_props(self, name, cost, dam, ran, sfreq):
+		self.name = name
 		self.cost = cost
 		#self.damage = dam
-		self.bullet_data = bullet_data
+		#self.bullet_data = bullet_data
 		self.range = ran
 		self.shoot_frequency = sfreq
 		
@@ -220,14 +251,25 @@ class Tower(Entity):
 		#self.damage = towerData.damage
 		self.range = towerData.range
 		self.shoot_frequency = towerData.shoot_frequency
+		#elf.splash = towerData.splash_range
 		self.tile = target_tile
-		self.color = (random.randint(80, 255), random.randint(80, 255), random.randint(80, 255)) #temporary
+		self.name = towerData.name
 		self.curFrameCount = 0
 		self.bullet_data = towerData.bullet_data
 		print "Tower created at (" + str(self.tile.x) + "," + str(self.tile.y) + ")"
+		filename = "./images/"+self.name+".png"
+
+		if os.path.isfile(filename):
+			self.image = self.image = pygame.image.load(filename)
+		else:
+			self.image = pygame.Surface((20, 20))
+			self.color = (random.randint(80, 255), random.randint(80, 255), random.randint(80, 255)) #temporary	
+			self.image.fill(self.color)
+
 
 	def draw(self, canvas):
-		pygame.draw.rect(canvas, self.color, (self.tile.x, self.tile.y, self.tile.TILE_WIDTH, self.tile.TILE_HEIGHT))
+		canvas.blit(self.image, (self.tile.x, self.tile.y))
+		# pygame.draw.rect(canvas, self.color, (self.tile.x, self.tile.y, self.tile.TILE_WIDTH, self.tile.TILE_HEIGHT))
 
 	# list of enemies
 	def update(self, map):
@@ -309,7 +351,6 @@ class Tile(Entity):
 	TYPE_PLOT 	= 5
 	STYLE_GRASS = 6
 	STYLE_STONE = 7
-	STYLE_PATH 	= 8
 
 	TILE_WIDTH = -1
 	TILE_HEIGHT = -1
@@ -321,6 +362,7 @@ class Tile(Entity):
 		self.style = Tile.NONE
 		self.type = Tile.NONE
 		self.path_id = 0
+		self.image = None
 
 	def draw(self, canvas):
 		if self.type == Tile.TYPE_SOLID:
@@ -329,6 +371,12 @@ class Tile(Entity):
 			pygame.draw.rect(canvas, (40, 40, 100), (self.x, self.y, Tile.TILE_WIDTH, Tile.TILE_HEIGHT))
 		elif self.type == Tile.TYPE_WALKABLE:
 			pygame.draw.rect(canvas, (40, 100, 40), (self.x, self.y, Tile.TILE_WIDTH, Tile.TILE_HEIGHT))
+
+		if self.style == Tile.STYLE_GRASS:
+			if self.style == Tile.STYLE_GRASS:
+				if self.image == None:
+					self.image = pygame.image.load("./images/grass.png")
+			canvas.blit(self.image, (self.x, self.y))
 
 		if self.path_id > 0:
 			pygame.draw.rect(canvas, (40, 150, 150), (self.x, self.y, Tile.TILE_WIDTH, Tile.TILE_HEIGHT))
@@ -375,8 +423,6 @@ class Map(Entity):
 
 		self.hover_tile = None
 
-		self.ui = UInterface()
-
 		for x in range(self.cols):
 			self.tiles.append([])
 			for y in range(self.rows):
@@ -385,7 +431,6 @@ class Map(Entity):
 		self.load_map("level_map/level0.map")
 
 	def draw(self, canvas):
-		self.ui.draw(canvas)
 
 		for x in range(self.cols):
 			for y in range(self.rows):
