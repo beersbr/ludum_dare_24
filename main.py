@@ -62,6 +62,7 @@ class Game():
 		self.running = True
 		self.input = GameInput()
 		self.map = Map(40, 30, self.res_x, self.res_y)
+		self.clock = pygame.time.Clock()
 		
 	def init_towers(self):
 		#We can do this however, just return a list of TowerData objects
@@ -123,6 +124,7 @@ class Game():
 			self.running = False
 
 		while self.running:
+			self.clock.tick(60)
 			for event in pygame.event.get():
 				self.gather_events(event)
 
