@@ -5,6 +5,22 @@ from pygame.locals import *
 import random
 
 # ##########################################################
+# UI object
+# This will render the ui in the appropriate spot
+# ##########################################################
+class UInterface():
+	def __init__(self):
+		self.game_name = "Something"
+		self.surface = pygame.Surface((200, 600))
+		self.surface.fill((255, 255, 255))
+
+	def draw(self, canvas):
+		canvas.blit(self.surface, (600, 0))
+
+	def update(self, args):
+		pass
+
+# ##########################################################
 # Vector2d Class 
 # This will be the object that will represent position on the coordinate
 # plane
@@ -138,9 +154,9 @@ class Monster(Entity):
 
 			distance = self.pos.distance(n.pos)
 
-			if distance < 10 and distance > 0:
-				tv = Vector2d(self.pos.x, self.pos.y)
-				mean = mean.add( tv.subtract(n.pos).normalize().divide(distance) )
+			if distance < 15 and distance > 0:
+				# tv = Vector2d(self.pos.x, self.pos.y)
+				mean = mean.add( self.pos.subtract(n.pos).normalize().divide(distance).multiply(2))
 				count += 1
 
 		dirv = Vector2d(dx, dy)
@@ -272,15 +288,18 @@ class Map(Entity):
 
 		self.hover_tile = None
 
+		self.ui = UInterface()
+
 		for x in range(self.cols):
 			self.tiles.append([])
 			for y in range(self.rows):
 				self.tiles[x].append(Tile(x*self.tile_width, y*self.tile_height, x, y))
 
-
 		self.load_map("level_map/level0.map")
 
 	def draw(self, canvas):
+		self.ui.draw(canvas)
+
 		for x in range(self.cols):
 			for y in range(self.rows):
 				self.tiles[x][y].draw(canvas)

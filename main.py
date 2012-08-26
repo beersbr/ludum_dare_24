@@ -46,6 +46,10 @@ class GameInput():
 	def mouse_down(self):
 		return self.mdown
 
+# ##########################################################
+# Menu class 
+# Menu object will hold the number monsters left and the 
+# ##########################################################
 
 # ##########################################################
 # Game class 
@@ -60,6 +64,7 @@ class Game():
 
 	def game_init(self):
 		pygame.init()
+		pygame.display.set_icon(pygame.image.load("./images/icon.png"))
 		pygame.display.set_caption('LudumDare 24 :: Evolution')
 		self.canvas = pygame.display.set_mode(self.res, pygame.HWSURFACE | pygame.DOUBLEBUF)
 
