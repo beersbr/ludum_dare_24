@@ -11,9 +11,7 @@ import random
 class UInterface():
 	def __init__(self):
 		self.game_name = "Something"
-		# self.surface = pygame.Surface((200, 600))
 		self.surface = pygame.image.load("./images/ui_background.png")
-		# self.surface.fill((255, 255, 255))
 		self.towers_info = []
 
 	def get_towers(self, towers):
@@ -21,7 +19,12 @@ class UInterface():
 		tfont = pygame.font.SysFont('monoco', 16)
 
 		current_y = 30
+		cur_tower = 1
 		for tower in towers:
+
+			key_num = str(cur_tower)
+
+			self.surface.blit(tfont.render(key_num, True, (80, 80, 80), (255, 255, 255)), (25, current_y+7))
 
 			filename = "./images/"+tower.name+".png"
 
@@ -31,7 +34,9 @@ class UInterface():
 
 			tower_name = tower.name.replace("_", " ")
 			self.surface.blit(tfont.render(tower_name, True, (80, 80, 80), (255,255,255)), (70, current_y+5))
+
 			current_y += 30
+			cur_tower += 1
 
 
 	def draw(self, canvas):
