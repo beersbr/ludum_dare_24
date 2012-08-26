@@ -1,9 +1,11 @@
 # Towers will be defined like so:
-# tower_name_with_underscores cost damage range frame_fire_frequency splash_range
+# tower_name_with_underscores cost damage range frame_fire_frequency
 
 # for splash range 0 means that it is a direct hit and no splash
 # anything greater than 0 is the pixel radius
+#bullet init:
+#def set_props(self, id, dam, speed, track, splash, splash_range):
 
-simple_tower 10 4 100 5 0
-bomb_tower 40 8 200 10 50
-speed_tower 30 2 150 2 0
+simple_tower 10 4 50 30 0
+bomb_tower 40 8 200 50 50
+speed_tower 30 2 150 20 0

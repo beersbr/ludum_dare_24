@@ -250,13 +250,13 @@ class Tower(Entity):
 		self.cost = towerData.cost
 		#self.damage = towerData.damage
 		self.range = towerData.range
-		self.shoot_frequency = towerData.shoot_frequency
+		self.shoot_frequency = int(towerData.shoot_frequency)
 		#elf.splash = towerData.splash_range
 		self.tile = target_tile
 		self.name = towerData.name
-		self.curFrameCount = 0
 		self.bullet_data = towerData.bullet_data
 		print "Tower created at (" + str(self.tile.x) + "," + str(self.tile.y) + ")"
+		#print "Shot freq: " + self.shoot_frequency
 		filename = "./images/"+self.name+".png"
 
 		if os.path.isfile(filename):
@@ -265,7 +265,7 @@ class Tower(Entity):
 			self.image = pygame.Surface((20, 20))
 			self.color = (random.randint(80, 255), random.randint(80, 255), random.randint(80, 255)) #temporary	
 			self.image.fill(self.color)
-
+		self.curFrameCount = 0
 
 	def draw(self, canvas):
 		canvas.blit(self.image, (self.tile.x, self.tile.y))
@@ -275,7 +275,9 @@ class Tower(Entity):
 	def update(self, map):
 		#check to see if and when we need to fire.
 		self.curFrameCount += 1
+		#print self.curFrameCount == self.shoot_frequency
 		if self.curFrameCount == self.shoot_frequency:
+			#print "Calling the shot"
 			#make a shot, reset curFrameCount
 			#find our target
 			target = map.get_closest_monster(self.pos, self.range)
@@ -329,7 +331,7 @@ class Bullet(Entity):
 			dY = bY - self.stats.speed
 		else:
 			dY = bY + self.stats.speed
-		if (ddX < .7 or ddY < .7):
+		if (ddX < .854 or ddY < .854):
 			#print "BULLET HAS HIT"
 			self.status = Bullet.HIT #Map should get rid of us
 		#Make the change!
