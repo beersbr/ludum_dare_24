@@ -5,6 +5,22 @@ from pygame.locals import *
 import random
 
 # ##########################################################
+# UI object
+# This will render the ui in the appropriate spot
+# ##########################################################
+class UInterface():
+	def __init__(self):
+		self.game_name = "Something"
+		self.surface = Surface(100, 600)
+		self.surface.fill((255, 255, 255))
+
+	def draw(self, canvas):
+		canvas.blit(self.surface, (0, 0))
+
+	def update(self, args):
+		pass
+
+# ##########################################################
 # Vector2d Class 
 # This will be the object that will represent position on the coordinate
 # plane
@@ -276,7 +292,6 @@ class Map(Entity):
 			self.tiles.append([])
 			for y in range(self.rows):
 				self.tiles[x].append(Tile(x*self.tile_width, y*self.tile_height, x, y))
-
 
 		self.load_map("level_map/level0.map")
 
