@@ -20,17 +20,17 @@ class UInterface():
 
 		tfont = pygame.font.SysFont('monoco', 16)
 
-		current_y = 20
+		current_y = 30
 		for tower in towers:
 
 			filename = "./images/"+tower.name+".png"
 
 			if os.path.isfile(filename):
 				image = pygame.image.load(filename)
-				self.surface.blit(image, (20, current_y))
+				self.surface.blit(image, (40, current_y))
 
 			tower_name = tower.name.replace("_", " ")
-			self.surface.blit(tfont.render(tower_name, True, (80, 80, 80), (255,255,255)), (50, current_y))
+			self.surface.blit(tfont.render(tower_name, True, (80, 80, 80), (255,255,255)), (70, current_y+5))
 			current_y += 30
 
 
@@ -281,7 +281,6 @@ class Tile(Entity):
 	TYPE_PLOT 	= 5
 	STYLE_GRASS = 6
 	STYLE_STONE = 7
-	STYLE_PATH 	= 8
 
 	TILE_WIDTH = -1
 	TILE_HEIGHT = -1
@@ -293,6 +292,7 @@ class Tile(Entity):
 		self.style = Tile.NONE
 		self.type = Tile.NONE
 		self.path_id = 0
+		self.image = None
 
 	def draw(self, canvas):
 		if self.type == Tile.TYPE_SOLID:
@@ -301,6 +301,12 @@ class Tile(Entity):
 			pygame.draw.rect(canvas, (40, 40, 100), (self.x, self.y, Tile.TILE_WIDTH, Tile.TILE_HEIGHT))
 		elif self.type == Tile.TYPE_WALKABLE:
 			pygame.draw.rect(canvas, (40, 100, 40), (self.x, self.y, Tile.TILE_WIDTH, Tile.TILE_HEIGHT))
+
+		if self.style == Tile.STYLE_GRASS:
+			if self.style == Tile.STYLE_GRASS:
+				if self.image == None:
+					self.image = pygame.image.load("./images/grass.png")
+			canvas.blit(self.image, (self.x, self.y))
 
 		if self.path_id > 0:
 			pygame.draw.rect(canvas, (40, 150, 150), (self.x, self.y, Tile.TILE_WIDTH, Tile.TILE_HEIGHT))
