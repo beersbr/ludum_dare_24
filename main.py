@@ -87,9 +87,6 @@ class Game():
 
 		return towers
 
-	def init_UI(self, towers):
-		pass
-
 	def game_init(self):
 		pygame.init()
 		pygame.display.set_icon(pygame.image.load("./images/icon.png"))
@@ -97,9 +94,11 @@ class Game():
 		self.canvas = pygame.display.set_mode(self.res, pygame.HWSURFACE | pygame.DOUBLEBUF)
 		tData = self.init_towers()
 		self.controller = Controller(tData)
-		self.ui = init_UI(tData)
+		self.ui = UInterface()
+		self.ui.get_towers(tData)
 
 	def draw(self):
+		self.ui.draw(self.canvas)
 		self.map.draw(self.canvas)
 
 	def update(self):

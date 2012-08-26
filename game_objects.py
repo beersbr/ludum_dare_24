@@ -16,7 +16,22 @@ class UInterface():
 		self.towers_info = []
 
 	def get_towers(self, towers):
-		pass
+
+		tfont = pygame.font.SysFont('monoco', 16)
+
+		current_y = 20
+		for tower in towers:
+
+			filename = "./images/"+tower.name+".png"
+
+			if os.path.isfile(filename):
+				image = pygame.image.load(filename)
+				self.surface.blit(image, (10, current_y))
+
+			tower_name = tower.name.replace("_", " ")
+			self.surface.blit(tfont.render(tower_name, True, (80, 80, 80), (255,255,255)), (40, current_y))
+			current_y += 30
+
 
 	def draw(self, canvas):
 		canvas.blit(self.surface, (600, 0))
@@ -329,8 +344,6 @@ class Map(Entity):
 
 		self.hover_tile = None
 
-		self.ui = UInterface()
-
 		for x in range(self.cols):
 			self.tiles.append([])
 			for y in range(self.rows):
@@ -339,7 +352,6 @@ class Map(Entity):
 		self.load_map("level_map/level0.map")
 
 	def draw(self, canvas):
-		self.ui.draw(canvas)
 
 		for x in range(self.cols):
 			for y in range(self.rows):
