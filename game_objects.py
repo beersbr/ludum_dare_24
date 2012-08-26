@@ -11,11 +11,11 @@ import random
 class UInterface():
 	def __init__(self):
 		self.game_name = "Something"
-		self.surface = Surface(100, 600)
+		self.surface = pygame.Surface((200, 600))
 		self.surface.fill((255, 255, 255))
 
 	def draw(self, canvas):
-		canvas.blit(self.surface, (0, 0))
+		canvas.blit(self.surface, (600, 0))
 
 	def update(self, args):
 		pass
@@ -288,6 +288,8 @@ class Map(Entity):
 
 		self.hover_tile = None
 
+		self.ui = UInterface()
+
 		for x in range(self.cols):
 			self.tiles.append([])
 			for y in range(self.rows):
@@ -296,6 +298,8 @@ class Map(Entity):
 		self.load_map("level_map/level0.map")
 
 	def draw(self, canvas):
+		self.ui.draw(canvas)
+
 		for x in range(self.cols):
 			for y in range(self.rows):
 				self.tiles[x][y].draw(canvas)
