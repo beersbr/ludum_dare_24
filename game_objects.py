@@ -138,9 +138,9 @@ class Monster(Entity):
 
 			distance = self.pos.distance(n.pos)
 
-			if distance < 10 and distance > 0:
-				tv = Vector2d(self.pos.x, self.pos.y)
-				mean = mean.add( tv.subtract(n.pos).normalize().divide(distance) )
+			if distance < 15 and distance > 0:
+				# tv = Vector2d(self.pos.x, self.pos.y)
+				mean = mean.add( self.pos.subtract(n.pos).normalize().divide(distance).multiply(2))
 				count += 1
 
 		dirv = Vector2d(dx, dy)
