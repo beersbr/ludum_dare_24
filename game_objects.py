@@ -21,6 +21,23 @@ class UInterface():
 		pass
 
 # ##########################################################
+# TowerData Class 
+# structure encapsulating tower data. Need to initialize a structure of these and give it to the controller
+# ##########################################################
+def TowerData():
+	def __init__(self)
+		self.cost = 0
+		self.damage = 0
+		self.range = 0
+		self.shoot_frequency = 0
+	def set_props(cost, dam, ran, sfreq):
+		self.cost = cost
+		self.damage = dam
+		self.range = ran
+		self.shoot_frequency = sfreq
+		
+
+# ##########################################################
 # Vector2d Class 
 # This will be the object that will represent position on the coordinate
 # plane
@@ -177,12 +194,14 @@ class Monster(Entity):
 # This is the object that will produce the bullets that will follow and kills the enemies
 # ##########################################################
 class Tower(Entity):
-	def __init__(self, pos_x, pos_y):
+	def __init__(self, target_tile, towerData):
 		self.pos = Vector2d(pos_x, pos_y)
-		self.id = 0
-		self.cost = 10
-		self.damage = 1
-		self.shoot_frequency = 10
+		self.id = 0 # Change this
+		self.cost = towerData.cost
+		self.damage = towerData.damage
+		self.range = towerData.range
+		self.shoot_frequency = towerData.sFreq
+		self.tile = target_tile
 
 	def draw(self, canvas):
 		pass
@@ -306,6 +325,9 @@ class Map(Entity):
 
 		for enemy in self.enemies:
 			enemy.draw(canvas)
+			
+		for tower in self.towers:
+			tower.draw(canvas)
 
 		return True
 

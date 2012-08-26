@@ -1,6 +1,8 @@
 import pygame, os, sys
 from pygame.locals import *
 from game_objects import *
+from game_controller import *
+
 
 # ##########################################################
 # GameInput class
@@ -61,6 +63,14 @@ class Game():
 		self.running = True
 		self.input = GameInput()
 		self.map = Map(40, 30, self.res_x, self.res_y)
+		tData = init_towers()
+		self.controller = Controller(map, input, tData)
+		
+	def init_towers():
+		#We can do this however, just return a list of TowerData objects
+		tmpTower = TowerData()
+		tmpTower.set_props(1, 10, 5, 10)
+		return [tmpTower]
 
 	def game_init(self):
 		pygame.init()
