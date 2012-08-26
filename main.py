@@ -76,7 +76,7 @@ class Game():
 		pygame.display.set_caption('LudumDare 24 :: Evolution')
 		self.canvas = pygame.display.set_mode(self.res, pygame.HWSURFACE | pygame.DOUBLEBUF)
 		tData = self.init_towers()
-		self.controller = Controller(map, input, tData)
+		self.controller = Controller(tData)
 
 	def draw(self):
 		self.map.draw(self.canvas)
@@ -87,6 +87,7 @@ class Game():
 			return False
 
 		self.map.update(self.input)
+		self.controller.update(self.map, self.input)
 
 	def cleanup(self):
 		pygame.quit()
