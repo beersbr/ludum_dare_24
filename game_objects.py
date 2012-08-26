@@ -13,6 +13,10 @@ class UInterface():
 		self.game_name = "Something"
 		self.surface = pygame.Surface((200, 600))
 		self.surface.fill((255, 255, 255))
+		self.towers_info = []
+
+	def get_towers(self, towers):
+		pass
 
 	def draw(self, canvas):
 		canvas.blit(self.surface, (600, 0))
@@ -207,11 +211,22 @@ class Tower(Entity):
 		self.range = towerData.range
 		self.shoot_frequency = towerData.shoot_frequency
 		self.tile = target_tile
-		self.color = (random.randint(80, 255), random.randint(80, 255), random.randint(80, 255)) #temporary
-		print "Tower created at (" + str(self.tile.x) + "," + str(self.tile.y) + ")"
+		self.name = towerData.name
+
+		filename = "./images/"+self.name+".png"
+
+		if os.path.isfile(filename):
+			self.image = self.image = pygame.image.load(filename)
+		else:
+			self.image = pygame.Surface((20, 20))
+			self.color = (random.randint(80, 255), random.randint(80, 255), random.randint(80, 255)) #temporary	
+			self.image.fill(self.color)
+
+		# print "Tower created at (" + str(self.tile.x) + "," + str(self.tile.y) + ")"
 
 	def draw(self, canvas):
-		pygame.draw.rect(canvas, self.color, (self.tile.x, self.tile.y, self.tile.TILE_WIDTH, self.tile.TILE_HEIGHT))
+		canvas.blit(self.image, (self.tile.x, self.tile.y))
+		# pygame.draw.rect(canvas, self.color, (self.tile.x, self.tile.y, self.tile.TILE_WIDTH, self.tile.TILE_HEIGHT))
 
 	# list of enemies
 	def update(self, args):

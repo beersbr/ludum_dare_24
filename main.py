@@ -65,14 +65,11 @@ class Game():
 		
 	def init_towers(self):
 		#We can do this however, just return a list of TowerData objects
-
 		re_comment = re.compile('^(\s)*?#.*$')
 		re_nothing = re.compile('^\s*$')
-
 		towers = []
 
 		f = open("./level_map/towers")
-
 		lines = f.readlines()
 
 		for line in lines:
@@ -90,6 +87,9 @@ class Game():
 
 		return towers
 
+	def init_UI(self, towers):
+		pass
+
 	def game_init(self):
 		pygame.init()
 		pygame.display.set_icon(pygame.image.load("./images/icon.png"))
@@ -97,6 +97,7 @@ class Game():
 		self.canvas = pygame.display.set_mode(self.res, pygame.HWSURFACE | pygame.DOUBLEBUF)
 		tData = self.init_towers()
 		self.controller = Controller(tData)
+		self.ui = init_UI(tData)
 
 	def draw(self):
 		self.map.draw(self.canvas)
