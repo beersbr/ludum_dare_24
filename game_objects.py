@@ -26,14 +26,19 @@ class UInterface():
 # ##########################################################
 class TowerData():
 	def __init__(self):
+		self.name = "<NO NAME>"
 		self.cost = 0
 		self.damage = 0
 		self.range = 0
 		self.shoot_frequency = 0
-	def set_props(self, cost, dam, ran, sfreq):
+		self.splash_range = 0
+
+	def set_props(self, name, cost, dam, ran, sfreq, splash):
+		self.name = name
 		self.cost = cost
 		self.damage = dam
 		self.range = ran
+		self.splash_range = splash
 		self.shoot_frequency = sfreq
 		
 

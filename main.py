@@ -24,7 +24,6 @@ class GameInput():
 
 		if event.type == pygame.MOUSEMOTION:
 			self.mpos.setc(event.pos[0], event.pos[1])
-			# print self.mpos
 
 		if event.type == pygame.MOUSEBUTTONDOWN:
 			pygame.mouse.set_visible(False)
@@ -66,9 +65,30 @@ class Game():
 		
 	def init_towers(self):
 		#We can do this however, just return a list of TowerData objects
-		tmpTower = TowerData()
-		tmpTower.set_props(1, 10, 5, 10)
-		return [tmpTower]
+
+		re_comment = re.compile('^(\s)*?#.*$')
+		re_nothing = re.compile('^\s*$')
+
+		towers = []
+
+		f = open("./level_map/towers")
+
+		lines = f.readlines()
+
+		for line in lines:
+			if re_comment.match(line):
+				continue
+			if re_nothing.match(line):
+				continue
+
+			tower = line.strip().split(" ")
+			td = TowerData()
+			td.set_props(tower[0], tower[1], tower[2], tower[3], tower[4], tower[5])
+			towers.append(td)
+
+		f.closed
+
+		return towers
 
 	def game_init(self):
 		pygame.init()
