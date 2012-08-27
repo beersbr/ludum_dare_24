@@ -6,7 +6,7 @@
 #bullet init:
 #def set_props(self, id, dam, speed, track, splash, splash_range):
 
-simple_tower 10 4 50 30 0
+simple_tower 10 4 150 30 0
 bomb_tower 40 8 200 50 50
 speed_tower 30 2 150 20 0
 

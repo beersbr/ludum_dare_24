@@ -331,7 +331,7 @@ class Bullet(Entity):
 			dY = bY - self.stats.speed
 		else:
 			dY = bY + self.stats.speed
-		if (ddX < .854 or ddY < .854):
+		if (ddX <= 2 and ddY <= 2):
 			#print "BULLET HAS HIT"
 			self.status = Bullet.HIT #Map should get rid of us
 		#Make the change!
