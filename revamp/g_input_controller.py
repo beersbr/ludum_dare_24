@@ -25,6 +25,9 @@ from g_input_handler import *
 # controller can a holder class for the input still but each object will implement its own
 # controller methods via callbacks.
 
+# For now the input function will be passed to the object, when something needs to be dont he object
+# will take responsiblity for making it happen.
+
 class InputController():
 	_instance = None # for the singleton in the future
 	_listener_id = 0
@@ -32,6 +35,7 @@ class InputController():
 	def __init__(self):
 		self.listeners = dict(pygame.KEYDOWN = [], pygame.KEYUP = [], pygame.MOUSEBUTTONDOWN = [], pygame.MOUSEBUTTONUP = [])
 		self.input = InputHander()
+		# self.focus = The object that has the user focus...
 
 	def listen(self, event_type, ls_obj, callback):
 		if event_type in self.listeners.keys():

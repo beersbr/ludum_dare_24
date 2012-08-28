@@ -53,12 +53,12 @@ class Vector2d():
 
 	def normalize(self):
 		length = math.sqrt(self.x*self.x, self.y*self.y)
-		if(length == 0)
+		if(length == 0):
 			return Vector2d(0.0, 0.0)
 		return Vector2d( (self.x/lenth), (self.y/length))
 
 	def dot_product(self, vect):
-		return ((self.x * vect.x) + self.y * vect.y))
+		return ((self.x * vect.x) + (self.y * vect.y))
 
 	@staticmethod
 	def radian_angle_between(vect1, vect2):
