@@ -31,6 +31,8 @@ class InputHandler():
 		if event.type == pygame.MOUSEBUTTONUP:
 			pygame.mouse_down = False
 
+		return True
+
 	def key_down(self, key):
 		if key in self._keys.keys():
 			if self._keys[key] == True:
