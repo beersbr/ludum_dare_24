@@ -15,7 +15,7 @@ class Game():
 
 	def init(self):
 		pygame.init()
-		# pygame.display.set_icon(pygame.image.load("./images/icon.png"))
+		pygame.display.set_icon(pygame.image.load("./images/icon.png"))
 		pygame.display.set_caption("LudumDare 24 :: Evolution Code Revamp")
 		self.buffer = pygame.display.set_mode(self.resolution.to_array(), pygame.HWSURFACE | pygame.DOUBLEBUF)
 		return True
