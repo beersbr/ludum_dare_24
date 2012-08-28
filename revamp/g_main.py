@@ -24,7 +24,8 @@ class Game():
 		pass
 
 	def update(self):
-		pass
+		if self.input.key_down(K_ESCAPE):
+			self.running = False
 
 	def cleanup(self):
 		pygame.quit()
@@ -53,10 +54,10 @@ class Game():
 
 		self.cleanup()
 
-
 if __name__ == "__main__":
 	print "Starting the game..."
 	game = Game()
 	game.play()
+	print "Done."
 
 # End of g_main.py
