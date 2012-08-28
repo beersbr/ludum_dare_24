@@ -2,6 +2,10 @@
 
 import math
 
+# Vector2d:
+# This is the staple of the coordinate system. Methods will be added as needed but I think
+# that I have most of them down
+
 class Vector2d():
 	def __init__(self, x = 0.0, y = 0.0):
 		self.x = x
@@ -56,5 +60,10 @@ class Vector2d():
 	def dot_product(self, vect):
 		return ((self.x * vect.x) + self.y * vect.y))
 
+	@staticmethod
+	def radian_angle_between(vect1, vect2):
+		dx = vect1.x - vect2.x
+		dy = vect1.y - vect2.y
+		return (math.atan2(dx, dy))
 
 # End of g_vectory.py

@@ -4,6 +4,11 @@ import pygame, os, sys
 from pygame.locals import *
 from g_vector import *
 
+# InputHandler:
+# This is supposed to be the generic container for the input. I have abstracted some of 
+# insides of the event handling a bit to make it easier to deal with and read in the code
+# as a whole.
+
 class InputHandler():
 	def __init__(self):
 		self._keys = {}
